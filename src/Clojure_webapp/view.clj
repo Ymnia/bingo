@@ -9,16 +9,17 @@
   (html5
     [:head
      [:title "Ruwan en Niels Bingo"]
-     (include-css "/css/stijlloos.css")]
+     (include-css "/stijlloos.css")]
     [:body [:div#wrapper content]]))
 
 (defn cell-html [rownr colnr cell with-submit?]
   [:td
    [:input {:name (str "b" rownr colnr)
-            :value (str cell)
+            :value (if (= \X (first (str cell))) (str (.substring cell 1)) (str cell))
             :type (if with-submit?
                     "submit"
-                    "button")}]])
+                    "button")
+            :class (if (= \X (first (str cell))) "clicked" )}]])
 
 (defn row-html [rownr row with-submit?]
   [:tr (map-indexed (fn [colnr cell]
@@ -44,7 +45,7 @@
 (defn play-screen []
   (layout
     [:div
-     [:p "Player (only one supported at this moment)" "it's your turn"]
+     [:p "Player (only one supported at this moment) " "it's your turn"]
      (getrokken-nummer-html)
      (board-html (model/get-board) true)]))
 

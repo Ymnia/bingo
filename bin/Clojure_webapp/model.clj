@@ -25,7 +25,7 @@
      (last (first s))))
   )
 (defn full-board? []
-  (< 99 (:beurt (session/get :game-state)))) 
+  (< 99 (:beurt (session/get :game-state))))
   
 
 (defn randboard []
@@ -49,19 +49,8 @@
 (defn get-board []
   (:board (session/get :game-state)))
 
-(defn new-beurtstate [oldstate]
-  {:board (get-board)
-   :beurt (inc (:beurt oldstate))
-   :getrokken (:getrokken (session/get :game-state))})
-
-(defn volgende-beurt! []
-  (session/swap! (fn [session-state]
-                   (assoc session-state :game-state
-                          (new-beurtstate (:game-state session-state))))))
-
-
 (defn get-beurtgetal []
-  (nth (:getrokken (session/get :game-state)) (:beurt (session/get :game-state))))
+    (nth (:getrokken (session/get :game-state)) (:beurt (session/get :game-state))))
 
 (defn getrokken-getallen []
   (take (:beurt (session/get :game-state)) (:getrokken (session/get :game-state))))
@@ -98,14 +87,27 @@
   ([board] (winner-in-rows-cols-ordiags? board)))
 
 (defn new-state [row col oldstate]
-  (if (not winner?)
-    {:board (assoc-in (:board oldstate) [row col] (str "p" (get-board-cell row col)))}))
+
+  (let [X (if (= \X (first (str (get-board-cell row col)))) "" "X" )]
+  ;(if (not winner?)
+    {:board (assoc-in (:board oldstate) [row col] (str X (get-board-cell row col)))
+     :beurt (:beurt oldstate)
+     :getrokken (:getrokken oldstate)}))
     
 (defn play! [row col]
   (session/swap! (fn [session-map]
                    (assoc session-map :game-state 
                           (new-state row col (:game-state session-map))))))
 
+(defn new-beurtstate [oldstate]
+  {:board (get-board)
+   :beurt (inc (:beurt oldstate))
+   :getrokken (:getrokken oldstate)})
+
+(defn volgende-beurt! []
+  (session/swap! (fn [session-state]
+                   (assoc session-state :game-state
+                          (new-beurtstate (:game-state session-state))))))
  
 (defn showcache []
   (session/get :game-state))
