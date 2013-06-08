@@ -49,12 +49,15 @@
 (defn get-board []
   (:board (session/get :game-state)))
 
-(defn volgende-beurt []
-  (let [beurtnr (inc (:beurt (session/get :game-state)))]
-    (session/swap! (fn [session-map]
-                     (assoc session-map :game-state ({:beurt beurtnr} :game-state))))))
-                            
-      ;;:game-state conj :beurt beurtnr))) 
+(defn new-beurtstate [oldstate]
+  {:board (get-board)
+   :beurt (inc (:beurt oldstate))
+   :getrokken (:getrokken (session/get :game-state))})
+
+(defn volgende-beurt! []
+  (session/swap! (fn [session-state]
+                   (assoc session-state :game-state
+                          (new-beurtstate (:game-state session-state))))))
 
 
 (defn get-beurtgetal []

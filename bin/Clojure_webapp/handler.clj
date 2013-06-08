@@ -7,7 +7,7 @@
 
 (defroutes app-routes
   (route/resources "/")
-  (route/not-found "Not Found (signature)"))
+  (route/not-found "Resource Not Found"))
 
 (def all-routes [bingo-routes app-routes])
 
