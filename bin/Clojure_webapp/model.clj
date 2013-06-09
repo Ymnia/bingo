@@ -1,8 +1,6 @@
 (ns Clojure-webapp.model
   (:require [noir.session :as session]))
 
-
-  ;helper functions
 (defn split [n xs]
   (reduce #(if (< (count (first %1)) n)
          (list (concat (first %1) [%2]) '())
