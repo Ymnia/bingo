@@ -84,9 +84,7 @@
                                  (let [cell (if (= \X (first (str (get-board-cell coord)))) 
                                               (str \X)
                                               (str (get-board-cell coord)))]
-                                   (do 
-                                     (println  cell " " \X " " (= (str \X)  (str cell) ))
-                                     (= (str \X)  cell ))))
+                                     (= (str \X)  cell )))
                              coords))
                    diag-coords))))
 
