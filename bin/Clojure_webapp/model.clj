@@ -82,11 +82,11 @@
     (boolean (some (fn [coords] 
                      (every? (fn [coord] 
                                  (let [cell (if (= \X (first (str (get-board-cell coord)))) 
-                                              (str (.substring (get-board-cell coord) 1))
+                                              (str \X)
                                               (str (get-board-cell coord)))]
-                                   ;(do 
-                                     ;(println  cell " " (in?   (getrokken-getallen) cell ) (getrokken-getallen))
-                                     (in?  (getrokken-getallen) cell )));)
+                                   (do 
+                                     (println  cell " " \X " " (= (str \X)  (str cell) ))
+                                     (= (str \X)  cell ))))
                              coords))
                    diag-coords))))
 
@@ -105,7 +105,7 @@
 
 (defn new-state [row col oldstate]
   (let [X (if (= \X (first (str (get-board-cell row col)))) "" "X" )]
-    {:board (assoc-in (:board oldstate) [row col] (str X (get-board-cell row col)))
+    {:board (assoc-in (:board oldstate) [row col] (str \X (get-board-cell row col)))
      :beurt (:beurt oldstate)
      :getrokken (:getrokken oldstate)}))
     
