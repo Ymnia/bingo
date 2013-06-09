@@ -25,7 +25,7 @@
      (last (first s))))
   )
 (defn full-board? []
-  (< 99 (:beurt (session/get :game-state))))
+  (< 98 (inc (:beurt (session/get :game-state)))))
   
 
 (defn randboard []
@@ -40,11 +40,8 @@
       (- length-left 1)
       (drop 5 interim-val)))))
 
-
-(def init-state {:board (empty-board) :beurt 0 :getrokken (random-select 99 (range 1 100)) })
-
 (defn reset-game! []
-  (session/put! :game-state init-state))
+  (session/put! :game-state {:board (empty-board) :beurt 0 :getrokken (random-select 99 (range 1 100)) } ));init-state))
 
 (defn get-board []
   (:board (session/get :game-state)))
@@ -56,11 +53,17 @@
   (take (:beurt (session/get :game-state)) (:getrokken (session/get :game-state))))
 
 (defn get-board-cell 
+  ([coll] (get-board-cell (nth coll 0) (nth coll 1)))
   ([row col] (get-board-cell (get-board) row col))
   ([board row col] (get-in board [row col])))
 
-(defn winner-in-rows-cols-ordiags?
-  [board]
+(defn cell-is-beurtgetal? [row col]
+    (= (get-beurtgetal) (get-board-cell row col)))
+
+(defn in?  [coll value]  
+  (= nil (some #{value} coll)))
+
+(defn winner-in-rows-cols-ordiags?  []
   (let [diag-coords [[[0 0] [1 1] [2 2] [3 3] [4 4]]
                      [[0 4] [3 1] [2 2] [1 3] [0 4]]
                      
@@ -78,26 +81,17 @@
                      ]]
     (boolean (some (fn [coords] 
                      (every? (fn [coord] 
-                               (contains? (get-board-cell board coord) (getrokken-getallen))) 
+                                 (let [cell (if (= \X (first (str (get-board-cell coord)))) 
+                                              (str (.substring (get-board-cell coord) 1))
+                                              (str (get-board-cell coord)))]
+                                   ;(do 
+                                     ;(println  cell " " (in?   (getrokken-getallen) cell ) (getrokken-getallen))
+                                     (in?  (getrokken-getallen) cell )));)
                              coords))
                    diag-coords))))
 
 (defn winner? 
-  ([] (winner? (get-board)))
-  ([board] (winner-in-rows-cols-ordiags? board)))
-
-(defn new-state [row col oldstate]
-
-  (let [X (if (= \X (first (str (get-board-cell row col)))) "" "X" )]
-  ;(if (not winner?)
-    {:board (assoc-in (:board oldstate) [row col] (str X (get-board-cell row col)))
-     :beurt (:beurt oldstate)
-     :getrokken (:getrokken oldstate)}))
-    
-(defn play! [row col]
-  (session/swap! (fn [session-map]
-                   (assoc session-map :game-state 
-                          (new-state row col (:game-state session-map))))))
+  [] (winner-in-rows-cols-ordiags?))
 
 (defn new-beurtstate [oldstate]
   {:board (get-board)
@@ -108,6 +102,18 @@
   (session/swap! (fn [session-state]
                    (assoc session-state :game-state
                           (new-beurtstate (:game-state session-state))))))
- 
+
+(defn new-state [row col oldstate]
+  (let [X (if (= \X (first (str (get-board-cell row col)))) "" "X" )]
+    {:board (assoc-in (:board oldstate) [row col] (str X (get-board-cell row col)))
+     :beurt (:beurt oldstate)
+     :getrokken (:getrokken oldstate)}))
+    
+(defn play! [row col]
+  (do (session/swap! (fn [session-map]
+                   (assoc session-map :game-state 
+                          (new-state row col (:game-state session-map))))))
+  (volgende-beurt!))
+
 (defn showcache []
   (session/get :game-state))

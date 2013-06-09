@@ -39,20 +39,20 @@
              [:input {:name "VOLGENDE"
                       :value (str "Getrokken is nu: "(model/get-beurtgetal))
                       :type "submit"}])
-            [:p#hidden
-             (model/showcache)]])
+            [:p#hidden]
+             (model/showcache)])
 
 (defn play-screen []
   (layout
     [:div
-     [:p "Player (only one supported at this moment) " "it's your turn"]
+     [:p "Player it's your turn"]
      (getrokken-nummer-html)
      (board-html (model/get-board) true)]))
 
-(defn winner-screen [winner]
+(defn winner-screen []
   (layout
     [:div
-     [:p "Player, you have WON" winner]
+     [:p "Player, you have WON"]
      (board-html (model/get-board) false)
      (link-to "/" "Reset")]))
 

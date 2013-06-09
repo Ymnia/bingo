@@ -1,5 +1,7 @@
 @CHARSET "ISO-8859-1";
-#hidden{}
+#hidden{
+	display:none;
+}
 .clicked{
 	text-decoration:line-through;
 }
