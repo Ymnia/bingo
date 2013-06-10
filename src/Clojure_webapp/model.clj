@@ -22,8 +22,9 @@
      (concat (butlast (first s)) (last s))
      (last (first s))))
   )
-(defn full-board? []
-  (< 98 (inc (:beurt (session/get :game-state)))))
+(defn full-board? 
+  ([] (full-board? (:beurt (session/get :game-state))))
+  ([beurtnr]  (< 98 (inc beurtnr))))
   
 
 (defn randboard []
@@ -58,33 +59,32 @@
 (defn cell-is-beurtgetal? [row col]
     (= (get-beurtgetal) (get-board-cell row col)))
 
-(defn in?  [coll value]  
-  (= nil (some #{value} coll)))
-
-(defn winner-in-rows-cols-ordiags?  []
-  (let [diag-coords [[[0 0] [1 1] [2 2] [3 3] [4 4]]
-                     [[0 4] [3 1] [2 2] [1 3] [0 4]]
-                     
-                     [[0 0] [1 0] [2 0] [3 0] [4 0]]
-                     [[0 1] [1 1] [2 1] [3 1] [4 1]]
-                     [[0 2] [1 2] [2 2] [3 2] [4 2]]
-                     [[0 3] [1 3] [2 3] [3 3] [4 3]]
-                     [[0 4] [1 4] [2 4] [3 4] [4 4]]
-                     
-                     [[0 0] [0 1] [0 2] [0 3] [0 4]]
-                     [[1 0] [1 1] [1 2] [1 3] [1 4]]
-                     [[2 0] [2 1] [2 2] [2 3] [2 4]]
-                     [[3 0] [3 1] [3 2] [3 3] [3 4]]
-                     [[4 0] [4 1] [4 2] [4 3] [4 4]]
-                     ]]
-    (boolean (some (fn [coords] 
-                     (every? (fn [coord] 
-                                 (let [cell (if (= \X (first (str (get-board-cell coord)))) 
+(defn winner-in-rows-cols-ordiags?  
+  ([] (winner-in-rows-cols-ordiags? (get-board)))
+  ([board]
+    (let [diag-coords [[[0 0] [1 1] [2 2] [3 3] [4 4]]
+                       [[0 4] [3 1] [2 2] [1 3] [0 4]]
+                       
+                       [[0 0] [1 0] [2 0] [3 0] [4 0]]
+                       [[0 1] [1 1] [2 1] [3 1] [4 1]]
+                       [[0 2] [1 2] [2 2] [3 2] [4 2]]
+                       [[0 3] [1 3] [2 3] [3 3] [4 3]]
+                       [[0 4] [1 4] [2 4] [3 4] [4 4]]
+                       
+                       [[0 0] [0 1] [0 2] [0 3] [0 4]]
+                       [[1 0] [1 1] [1 2] [1 3] [1 4]]
+                       [[2 0] [2 1] [2 2] [2 3] [2 4]]
+                       [[3 0] [3 1] [3 2] [3 3] [3 4]]
+                       [[4 0] [4 1] [4 2] [4 3] [4 4]]
+                       ]]
+      (boolean (some (fn [coords] 
+                       (every? (fn [coord] 
+                                 (let [cell (if (= \X (first (str (get-board-cell board (nth coord 0) (nth coord 1))))) 
                                               (str \X)
-                                              (str (get-board-cell coord)))]
-                                     (= (str \X)  cell )))
-                             coords))
-                   diag-coords))))
+                                              (str (get-board-cell board (nth coord 0) (nth coord 1))))]
+                                   (= (str \X)  cell )))
+                               coords))
+                     diag-coords)))))
 
 (defn winner? 
   [] (winner-in-rows-cols-ordiags?))

@@ -22,12 +22,11 @@
           (model/play! rownr colnr)
           (if (model/winner?)
             (view/winner-screen)
-            (view/play-screen)))
-        (view/play-screen))))
-  
-  )
-        ;(if-let [winner (model/winner?)]
-        ; (view/winner-screen winner)
+            (if (model/full-board?)
+              (view/draw-screen)
+              (view/play-screen)
+              )))
+          (view/play-screen)))))
 
 (defroutes bingo-routes
   (GET "/" [] (start-page))
